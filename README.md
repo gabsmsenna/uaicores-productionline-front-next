@@ -1,36 +1,24 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🎨 Sobre o Frontend
 
-## Getting Started
+Este projeto de estudo traz a camada de **frontend** para o sistema de gerenciamento da linha de produção de uma gráfica.  
+O objetivo é oferecer uma interface moderna, responsiva e intuitiva, garantindo uma experiência fluida para usuários que precisam cadastrar clientes, criar pedidos e acompanhar em tempo real o andamento da produção.
 
-First, run the development server:
+## 🚀 Tecnologias Utilizadas
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Next.js 15**: Framework React de última geração, garantindo performance, SEO otimizado e suporte a renderização híbrida (SSR/SSG).
+- **Auth.js**: Responsável pela autenticação e controle de acesso seguro dos usuários.
+- **ShadCN UI**: Biblioteca de componentes acessíveis e elegantes, que agiliza o desenvolvimento e mantém a consistência visual.
+- **TailwindCSS 4**: Sistema de estilização utilitário que garante flexibilidade e rapidez na criação de interfaces modernas e responsivas.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🖥️ Objetivo do Frontend
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+O frontend é projetado para:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Ser o **ponto de entrada** dos usuários no sistema.
+- Garantir **usabilidade simples** e **navegação clara** em todos os fluxos.
+- Permitir **cadastro de clientes**, **criação de pedidos** e **monitoramento da linha de produção** de forma visual e acessível.
+- Integrar-se de forma transparente ao backend serverless, aproveitando os benefícios de escalabilidade e baixo custo.
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+🔗 Juntos, backend e frontend compõem uma solução completa para simulação do fluxo de trabalho de uma gráfica, explorando boas práticas modernas de desenvolvimento e tecnologias de ponta.
