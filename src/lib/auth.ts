@@ -43,6 +43,7 @@ const { handlers, auth, signIn, signOut } = NextAuth({
           accessToken?: string;
           expiresIn?: number; // em segundos
           refreshToken?: string;
+          userRole: string;
         };
         console.log("Resposta do backend:", data);
 
@@ -61,6 +62,7 @@ const { handlers, auth, signIn, signOut } = NextAuth({
           accessToken: data.accessToken,
           refreshToken: data.refreshToken ?? null,
           accessTokenExpiresAt,
+          userRole: data.userRole,
         } as any;
       },
     }),
@@ -74,6 +76,7 @@ const { handlers, auth, signIn, signOut } = NextAuth({
           id: (user as any).id,
           name: (user as any).name,
           username: (user as any).username,
+          userRole: (user as any).userRole,
         };
         token.accessToken = (user as any).accessToken;
         token.refreshToken = (user as any).refreshToken;
@@ -90,10 +93,16 @@ const { handlers, auth, signIn, signOut } = NextAuth({
       return token;
     },
     async session({ session, token }) {
-      (session as any).user = token.user;
+      if (token.user) {
+        Object.assign(session.user, {
+          userRole: (token.user as any).userRole,
+        });
+      }
+
       (session as any).accessToken = token.accessToken;
       (session as any).refreshToken = token.refreshToken;
       (session as any).accessTokenExpiresAt = token.accessTokenExpiresAt;
+
       return session;
     },
   },
@@ -104,7 +113,7 @@ async function refreshAccessToken(token: any) {
   try {
     const refreshUrl =
       process.env.BACKEND_BASE_AUTH_REFRESH_PATH ||
-      "http://localhost:8080/api/auth/refresh";
+      "http://localhost:8080/api/auth/token/refresh";
     console.log("🌐 Refreshing access token...");
 
     const res = await fetch(refreshUrl, {
