@@ -1,6 +1,5 @@
-
 import { cn } from "@/lib/utils";
-import { OrderStatus, ItemStatus } from "@/types/order";
+import { OrderStatus, ItemStatus } from "@/types/types";
 
 interface StatusBadgeProps {
   status: OrderStatus | ItemStatus;
@@ -16,11 +15,8 @@ export function StatusBadge({ status, className }: StatusBadgeProps) {
           className: "bg-status-pending/10 text-status-pending border-status-pending/20"
         };
       case OrderStatus.PRODUCAO:
-        case ItemStatus.EM_SILK:
-        case ItemStatus.CHAPADO:
-        case ItemStatus.IMPRESSO:
         return {
-          label: status === ItemStatus.EM_SILK ? "Em Produção" : "Processando",
+          label: "Em Produção",
           className: "bg-status-processing/10 text-status-processing border-status-processing/20"
         };
       case OrderStatus.FINALIZADO:
@@ -32,6 +28,41 @@ export function StatusBadge({ status, className }: StatusBadgeProps) {
         return {
           label: "Postado",
           className: "bg-status-cancelled/10 text-status-cancelled border-status-cancelled/20"
+        };
+      case ItemStatus.IMPRESSO:
+        return {
+          label: "Impresso",
+          className: "bg-status-processing/10 text-status-processing border-status-processing/20"
+        };
+      case ItemStatus.ENCARTELADO:
+        return {
+          label: "Encartelado",
+          className: "bg-status-processing/10 text-status-processing border-status-processing/20"
+        };
+      case ItemStatus.EM_SILK:
+        return {
+          label: "Em Silk",
+          className: "bg-status-processing/10 text-status-processing border-status-processing/20"
+        };
+      case ItemStatus.CHAPADO:
+        return {
+          label: "Chapado",
+          className: "bg-status-processing/10 text-status-processing border-status-processing/20"
+        };
+      case ItemStatus.VERSO_PRONTO:
+        return {
+          label: "Verso Pronto",
+          className: "bg-status-processing/10 text-status-processing border-status-processing/20"
+        };
+      case ItemStatus.ACABAMENTO:
+        return {
+          label: "Acabamento",
+          className: "bg-status-processing/10 text-status-processing border-status-processing/20"
+        };
+      case ItemStatus.EMBALADO:
+        return {
+          label: "Embalado",
+          className: "bg-status-completed/10 text-status-completed border-status-completed/20"
         };
       default:
         return {
