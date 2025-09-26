@@ -6,18 +6,26 @@ import { cn } from "@/lib/utils";
 import { Calendar, Package, User } from "lucide-react";
 import { Item, Order } from "@/types/types";
 import Image from "next/image";
-import { ItemsListModal } from "./items-list-modal"; // 👈 import novo
+import ItemsListModal from "./items-list-modal";
 
 interface OrderCardProps {
   order: Order;
   onItemClick: (item: Item) => void;
+  onClick?: () => void;
 }
 
-export default function OrderCard({ order, onItemClick }: OrderCardProps) {
+export default function OrderCard({
+  order,
+  onItemClick,
+  onClick,
+}: OrderCardProps) {
   const [isAllItemsOpen, setIsAllItemsOpen] = useState(false);
 
   return (
-    <>
+    <div
+      onClick={onClick}
+      className="cursor-pointer rounded-md border p-4 hover:shadow-md transition"
+    >
       <Card className="group relative overflow-hidden bg-gradient-card shadow-card hover:shadow-lg transition-all duration-200 hover:-translate-y-1">
         <CardHeader className="pb-4">
           <div className="flex items-start justify-between">
@@ -58,7 +66,10 @@ export default function OrderCard({ order, onItemClick }: OrderCardProps) {
                 key={`${item.orderId}-${index}`}
                 variant="ghost"
                 size="sm"
-                onClick={() => onItemClick(item)}
+                onClick={(e) => {
+                  e.stopPropagation(); // 👈 Previne propagação
+                  onItemClick(item);
+                }}
                 className={cn(
                   "h-auto p-3 justify-start text-left hover:bg-accent/50 transition-colors",
                   "border border-transparent hover:border-border"
@@ -97,7 +108,10 @@ export default function OrderCard({ order, onItemClick }: OrderCardProps) {
                 <Button
                   variant="link"
                   className="text-sm text-muted-foreground underline"
-                  onClick={() => setIsAllItemsOpen(true)}
+                  onClick={(e) => {
+                    e.stopPropagation(); // 👈 Previne propagação
+                    setIsAllItemsOpen(true);
+                  }}
                 >
                   +{order.items.length - 3} itens adicionais
                 </Button>
@@ -113,6 +127,6 @@ export default function OrderCard({ order, onItemClick }: OrderCardProps) {
         onClose={() => setIsAllItemsOpen(false)}
         items={order.items}
       />
-    </>
+    </div>
   );
 }

@@ -19,7 +19,7 @@ interface OrderModalProps {
   loading?: boolean;
 }
 
-export function OrderModal({ open, onClose, order, loading = false }: OrderModalProps) {
+export default function OrderModal({ open, onClose, order, loading = false }: OrderModalProps) {
   const getStatusText = (status: string) => {
     switch (status) {
       case "POSTADO":

@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import OrderCard from "@/components/order-card";
 import ItemModal from "@/components/item-modal";
+import OrderModal from "@/components/order-modal";
 import { ProductionList } from "@/components/production-list";
 import { useProductionItems } from "@/hooks/use-production-item";
 import { useProductionOrders } from "@/hooks/use-production-order";
@@ -15,20 +16,27 @@ import AppSidebar from "@/app/dashboard/components/app-sidebar";
 import { useUpdateItem } from "@/hooks/use-update-item";
 import { useSession } from "next-auth/react";
 
-const ProductionPage = () => {
+export default function ProductionPage() {
   const [selectedItem, setSelectedItem] = useState<Item | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const {
-    updateItem,
-  } = useUpdateItem();
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
+
+  const { updateItem } = useUpdateItem();
   const { data: session, status } = useSession();
 
   // Pedidos vindos da API
   const { orders, loading: ordersLoading } = useProductionOrders();
 
   // Itens em produção vindos da API
-  const { items: productionItems, loading: productionLoading } =
-    useProductionItems();
+  const { items: productionItems, loading: productionLoading } = useProductionItems();
+  const [items, setItems] = useState<Item[]>([]);
+
+  useEffect(() => {
+    if (productionItems) {
+      setItems(productionItems);
+    }
+  }, [productionItems]);
 
   const handleItemClick = (item: Item) => {
     console.log("Item clicado: ", item);
@@ -41,43 +49,68 @@ const ProductionPage = () => {
     setSelectedItem(null);
   };
 
-  function getChangedFields(original: Item, updated: Partial<Item>): Partial<Item> {
-  const changes: Partial<Item> = {};
-  
-  Object.keys(updated).forEach((key) => {
-    const typedKey = key as keyof Item;
-    if (original[typedKey] !== updated[typedKey]) {
-      changes[typedKey] = updated[typedKey] as any;
-    }
-  });
+  const handleOrderClick = (order: Order) => {
+    setSelectedOrder(order);
+    setIsOrderModalOpen(true);
+  };
 
-  changes.orderId = original.orderId;
-  
-  return changes;
-}
+  const handleCloseOrderModal = () => {
+    setSelectedOrder(null);
+    setIsOrderModalOpen(false);
+  };
 
-  const handleSaveItem = async (itemId: string | number, updatedData: Partial<Item>) => {
-  try {
-    if (!selectedItem) return;
+  function getChangedFields(
+    original: Item,
+    updated: Partial<Item>
+  ): Partial<Item> {
+    const changes: Partial<Item> = {};
 
-    // Pega os campos alterados
-    const changedFields = getChangedFields(selectedItem, updatedData);
+    Object.keys(updated).forEach((key) => {
+      const typedKey = key as keyof Item;
+      if (original[typedKey] !== updated[typedKey]) {
+        changes[typedKey] = updated[typedKey] as any;
+      }
+    });
 
-    if (Object.keys(changedFields).length === 0) {
-      console.log("Nenhuma modificação detectada.");
-      setIsModalOpen(false);
-      return;
-    }
+    changes.orderId = original.orderId;
 
-    await updateItem(itemId, changedFields);
-
-    // Fecha modal
-    setIsModalOpen(false);
-
-  } catch (error) {
-    console.error("Erro ao atualizar item:", error);
+    return changes;
   }
-};
+
+  const handleSaveItem = async (
+    itemId: string | number,
+    updatedData: Partial<Item>
+  ) => {
+    try {
+      if (!selectedItem) return;
+
+      const changedFields = getChangedFields(selectedItem, updatedData);
+
+      if (Object.keys(changedFields).length === 0) {
+        console.log("Nenhuma modificação detectada.");
+        setIsModalOpen(false);
+        return;
+      }
+
+      await updateItem(itemId, changedFields);
+
+      // ✅ Atualiza itens em tempo real
+      setItems((prev) =>
+        prev.map((item) =>
+          item.id === itemId ? { ...item, ...changedFields } : item
+        )
+      );
+
+      // ✅ Atualiza também o item selecionado
+      setSelectedItem((prev) =>
+        prev ? { ...prev, ...changedFields } : prev
+      );
+
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error("Erro ao atualizar item:", error);
+    }
+  };
 
   return (
     <SidebarProvider>
@@ -118,6 +151,7 @@ const ProductionPage = () => {
                     key={order.orderId}
                     order={order}
                     onItemClick={handleItemClick}
+                    onClick={() => handleOrderClick(order)}
                   />
                 ))
               ) : (
@@ -140,7 +174,7 @@ const ProductionPage = () => {
             </div>
 
             <ProductionList
-              items={productionItems}
+              items={items}
               onItemClick={handleItemClick}
               loading={productionLoading}
             />
@@ -150,14 +184,17 @@ const ProductionPage = () => {
           <ItemModal
             item={selectedItem}
             isOpen={isModalOpen}
-            onClose={handleCloseModal}
-            role={session?.user?.userRole as "OFFICER" | "DEV" | "ADMIN" }
+            onClose={() => setIsModalOpen(false)}
+            role={session?.user?.userRole as "OFFICER" | "DEV" | "ADMIN"}
             onSave={handleSaveItem}
+          />
+          <OrderModal
+            order={selectedOrder}
+            open={isOrderModalOpen}
+            onClose={handleCloseOrderModal}
           />
         </div>
       </div>
     </SidebarProvider>
   );
-};
-
-export default ProductionPage;
+}

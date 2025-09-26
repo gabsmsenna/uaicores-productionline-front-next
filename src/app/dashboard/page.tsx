@@ -7,7 +7,7 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { useDashboardAnalytics } from "@/hooks/use-analytics";
 import { useRecentOrders } from "@/hooks/use-recent-orders";
 import { useOrderDetails } from "@/hooks/use-order-details";
-import { OrderModal } from "@/components/order-modal";
+import OrderModal from "@/components/order-modal";
 
 export default function DashboardPage() {
   const { recentOrders, loading, error } = useRecentOrders();

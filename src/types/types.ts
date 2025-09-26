@@ -34,10 +34,10 @@ export interface Item {
 }
 
 export interface Order { 
-    deliveryDate: Date;
+    deliveryDate: string;
     orderId: number;
     clientName: string;
     status: OrderStatus;
     items: Item[];
-    createdAt: string;
+    saleDate: string;
 }
