@@ -21,7 +21,7 @@ export default function ProductionPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
-
+  const [localOrders, setLocalOrders] = useState<Order[]>([]);
   const { updateItem } = useUpdateItem();
   const { data: session, status } = useSession();
 
@@ -29,7 +29,8 @@ export default function ProductionPage() {
   const { orders, loading: ordersLoading } = useProductionOrders();
 
   // Itens em produção vindos da API
-  const { items: productionItems, loading: productionLoading } = useProductionItems();
+  const { items: productionItems, loading: productionLoading } =
+    useProductionItems();
   const [items, setItems] = useState<Item[]>([]);
 
   useEffect(() => {
@@ -37,6 +38,12 @@ export default function ProductionPage() {
       setItems(productionItems);
     }
   }, [productionItems]);
+
+  useEffect(() => {
+    if (orders) {
+      setLocalOrders(orders);
+    }
+  }, [orders]);
 
   const handleItemClick = (item: Item) => {
     console.log("Item clicado: ", item);
@@ -101,10 +108,17 @@ export default function ProductionPage() {
         )
       );
 
-      // ✅ Atualiza também o item selecionado
-      setSelectedItem((prev) =>
-        prev ? { ...prev, ...changedFields } : prev
+      setLocalOrders((prevOrders) =>
+        prevOrders.map((order) => ({
+          ...order,
+          items: order.items.map((item) =>
+            item.id === itemId ? { ...item, ...changedFields } : item
+          ),
+        }))
       );
+
+      // ✅ Atualiza também o item selecionado
+      setSelectedItem((prev) => (prev ? { ...prev, ...changedFields } : prev));
 
       setIsModalOpen(false);
     } catch (error) {
@@ -146,7 +160,7 @@ export default function ProductionPage() {
               {ordersLoading ? (
                 <p className="text-muted-foreground">Carregando pedidos...</p>
               ) : orders?.length ? (
-                orders.map((order: Order) => (
+                localOrders.map((order: Order) => (
                   <OrderCard
                     key={order.orderId}
                     order={order}
